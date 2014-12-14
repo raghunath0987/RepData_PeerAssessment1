@@ -1,25 +1,19 @@
----
-title: "Reproducible Research: Peer Assessment 1" 
-output:
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
        
 
 ## Loading and preprocessing the data
 
-```{r}
 
+```r
 activity<- read.table(file =  "activity.csv",header = TRUE,sep = ",",colClasses = c("integer","character","integer"))
                       
 activityNoNa<-activity[complete.cases(activity),]
-
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r,message=FALSE}
 
+```r
 require(plyr)
 
 # Calculate total number of steps taken each day
@@ -33,16 +27,17 @@ TotalStepsDayMedian<-median(activityDayAgg$steps)
   
 # Plot the Histogram of Total Steps Taken Per Day
 hist(x = activityDayAgg$steps,main="Histogram of Total Steps Taken Per Day",xlab = "Steps Per Day",ylab = "Frequency",ylim = c(1,30),)
-  
 ```
 
-#### Mean of the total number of steps taken per day is `r TotalStepsDayMean`.
-#### Median pf the total number of steps taken per day is `r TotalStepsDayMedian`
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+#### Mean of the total number of steps taken per day is 10766.19.
+#### Median pf the total number of steps taken per day is 10765
 
 # What is the average daily activity pattern?
 
-```{r message=FALSE}
 
+```r
 # Calculate the Mean of steps taken for each interval
 activityIntervalAgg<-ddply(.data = activityNoNa[,c(1,3)],.variables = "interval",.fun = summarize,steps=mean(steps) )
 
@@ -51,16 +46,17 @@ MaxStepsInterval<-activityIntervalAgg[activityIntervalAgg$steps==max(activityInt
 
 #plot the graph containing average number of steps taken in each interval
 plot(x = activityIntervalAgg$interval,y = activityIntervalAgg$steps,type = "l",xlab = "Time Interval" ,ylab = "Average Number of Steps",main = "Plot of Average Number of Steps Taken in Each Interval",ylim = c(0,300))
-
 ```
 
-#### `r MaxStepsInterval` Interval Time contains the maximum number of steps on an average across all days
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+#### 835 Interval Time contains the maximum number of steps on an average across all days
 
 
 # Imputing missing values
 
-```{r message=FALSE}
 
+```r
 # Total Number of Missing Rows
 
 NaRows<-nrow(activity[!complete.cases(activity),])
@@ -121,19 +117,20 @@ if (ImputedTotalStepsDayMedian < TotalStepsDayMedian) {
 
 # Plot the Histogram of Total Steps Taken Per Day on the imputed dataset
 hist(x = ImputedactivityDayAgg$steps,main="Histogram of Total Steps Taken Per Day After Imputing Missing Data",xlab = "Steps Per Day",ylab = "Frequency",ylim = c(1,40),)
-
 ```
 
-#### Total Number of rows with missing values is `r NaRows`
-#### The Mean of the total steps taken per day after imputing missing values is `r ImputedTotalStepsDayMean`
-#### `r MeanImpact`
-#### The Median of the total steps taken per day after imputing missing values is `r ImputedTotalStepsDayMedian`
-#### `r MedianImpact`
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+#### Total Number of rows with missing values is 2304
+#### The Mean of the total steps taken per day after imputing missing values is 10766.19
+#### The Mean hasn't changed after imputing missing data
+#### The Median of the total steps taken per day after imputing missing values is 10766.19
+#### The Median has increased after imputing missing data
 
 # Are there differences in activity patterns between weekdays and weekends?
 
-```{r message=FALSE}
 
+```r
 # Convert the date variable to Date class
 
 ImputeActivity$date<-as.Date(x = ImputeActivity$date,format="%Y-%m-%d")
@@ -164,5 +161,6 @@ require(lattice)
 # Plot the pannel plot between containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
 
 xyplot(x=steps ~ interval | weekfactor,data=ImputeActivityIntervalAgg,layout=c(1,2),type="l",xlab="Interval",ylab="Number of Steps")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
